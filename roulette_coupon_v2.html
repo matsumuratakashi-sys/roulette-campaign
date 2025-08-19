@@ -31,6 +31,7 @@
       background-color: #4CAF50;
       color: white;
       transition: background-color 0.3s;
+      display: inline-block;
     }
     button:hover {
       background-color: #45a049;
@@ -64,6 +65,7 @@
       color: black;
       text-align: center;
       box-sizing: border-box;
+      pointer-events: none;
     }
     .highlight {
       animation: highlightFlash 1s ease-out;
@@ -103,9 +105,13 @@
     </div>
   </div>
 
-  <button id="spinButton">ルーレットを回す</button>
+  <div>
+    <button id="spinButton">ルーレットを回す</button>
+  </div>
   <div id="result"></div>
-  <button id="resetButton" style="font-size:14px; background-color: #008CBA;">🔄 テスト用に抽選状態をリセット</button>
+  <div>
+    <button id="resetButton" style="font-size:14px; background-color: #008CBA;">🔄 テスト用に抽選状態をリセット</button>
+  </div>
 
   <script>
     let prizePool = {
@@ -196,11 +202,12 @@
       document.getElementById('result').innerText = "抽選状態がリセットされました（テスト用）";
     }
 
-    window.onload = () => {
+    document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('spinButton').addEventListener('click', spinRoulette);
       document.getElementById('resetButton').addEventListener('click', resetTest);
-    };
+    });
   </script>
 </body>
 </html>
+
 
