@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ルーレット抽選</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 50px 20px;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+      word-break: break-word;
+      line-height: 1.8;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #spinner {
+      width: 200px;
+      height: 200px;
+      border: 10px solid #ccc;
+      border-top: 10px solid #f66;
+      border-radius: 50%;
+      margin: 30px auto;
+      animation: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-size: 32px; margin-bottom: 10px;">抽選ルーレット</h1>
+  <p style="font-size: 18px; margin-bottom: 30px;">ボタンを押して、クーポンを当てよう！</p>
+  <div id="spinner"></div>
+  <button onclick="spinRoulette()">ルーレットを回す</button>
+  <div id="result"></div>
+  <button onclick="resetTest()" style="margin-top:20px;font-size:14px;">🔄 テスト用に抽選状態をリセット</button>
+
+  <script>
+    let prizePool = {
+      '1等: 3000円OFFクーポン': 5,
+      '2等: 2000円OFFクーポン': 10,
+      '3等: 1000円クーポン': 20,
+      '4等: 500円クーポン': 40,
+      '5等: 100円クーポン': 100,
+      'はずれ': 1000
+    };
+
+    function spinRoulette() {
+      let resultDiv = document.getElementById('result');
+      let spinner = document.getElementById('spinner');
+
+      if (localStorage.getItem('hasSpun')) {
+        resultDiv.innerText = "この端末ではすでに抽選を行っています。";
+        return;
+      }
+
+      spinner.style.animation = "spin 1s ease-out";
+
+      setTimeout(() => {
+        spinner.style.animation = "none";
+
+        let total = Object.values(prizePool).reduce((a, b) => a + b, 0);
+        if (total === 0) {
+          resultDiv.innerText = "抽選は終了しました。";
+          return;
+        }
+
+        let rand = Math.floor(Math.random() * total);
+        let sum = 0;
+        for (let key in prizePool) {
+          sum += prizePool[key];
+          if (rand < sum) {
+            if (prizePool[key] > 0) {
+              prizePool[key]--;
+              localStorage.setItem('hasSpun', 'true');
+              if (key.includes('クーポン')) {
+                resultDiv.innerHTML = `${key} が当たりました！<br><br>クーポンコード: <strong>${generateCouponCode()}</strong>`;
+              } else {
+                resultDiv.innerHTML = `${key} でした！<br><br>残念！`;
+              }
+              return;
+            }
+          }
+        }
+      }, 1000);
+    }
+
+    function generateCouponCode() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = '';
+      for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    function resetTest() {
+      localStorage.removeItem('hasSpun');
+      document.getElementById('result').innerText = "抽選状態がリセットされました（テスト用）";
+    }
+  </script>
+</body>
+</html>
